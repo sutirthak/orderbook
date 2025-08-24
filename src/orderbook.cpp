@@ -1,6 +1,9 @@
 #include "orderbook.h"
 
 // ------------------ addOrder ------------------
+// Add a new order to the order book
+// If it's a buy order, try to match it against existing sell orders
+// If it's a sell order, try to match it against existing buy orders
 void OrderBook::addOrder(const Order& o) {
     allOrders.push_back(o);
     auto it = std::prev(allOrders.end());
@@ -16,6 +19,14 @@ void OrderBook::addOrder(const Order& o) {
 }
 
 // ------------------ matchBuy ------------------
+// Match a buy order against existing sell orders
+// If fully matched, do not add to book
+// If partially matched, add remaining to book
+// If not matched at all, add to book
+// Market buy (price=0) matches with best available sell prices
+// Limit buy matches with sell prices <= buy price
+// Trades are executed at the sell order price
+// Similar logic applies to matchSell
 void OrderBook::matchBuy(std::list<Order>::iterator it) {
     while (it->quantity > 0 && !sellPrices.empty()) {
         double bestSellPrice = sellPrices.top();
@@ -96,6 +107,10 @@ void OrderBook::matchSell(std::list<Order>::iterator it) {
 }
 
 // ------------------ printOrderBook ------------------
+// Print the current state of the order book
+// Display buy orders in descending price order and sell orders in ascending price order
+// Show aggregated quantities at each price level
+// Format output neatly in tabular form
 void OrderBook::printOrderBook() {
     std::cout << "Order Book:\n";
     std::cout << std::left
@@ -137,6 +152,9 @@ void OrderBook::printOrderBook() {
 }
 
 // ------------------ printTrades ------------------
+// Print all executed trades
+// Format output neatly in tabular form
+// Show Buy Order ID, Sell Order ID, Trade Price, and Quantity
 void OrderBook::printTrades() {
     std::cout << "Trade Book:\n";
     if (trades.empty()) {

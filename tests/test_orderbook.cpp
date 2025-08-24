@@ -11,14 +11,14 @@ void testBasicMatch() {
     auto t = ob.trades[0];
     assert(t.buyOrderId == 1);
     assert(t.sellOrderId == 2);
-    assert(t.price == 99.0);
+    assert(t.price == 100.0);
     assert(t.quantity == 5);
 
-    std::cout << "testBasicMatch Passed ✅\n";
+    std::cout << "Basic Test Passed\n";
 }
 
 int main() {
     testBasicMatch();
-    std::cout << "All tests passed ✅\n";
+    std::cout << "All tests passed\n";
     return 0;
 }

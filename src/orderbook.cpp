@@ -20,14 +20,15 @@ void OrderBook::matchBuy(std::list<Order>::iterator it) {
     while (it->quantity > 0 && !sellPrices.empty()) {
         double bestSellPrice = sellPrices.top();
 
+        // Market buy: price == 0 means accept any sell price
+        if (it->price != 0 && bestSellPrice > it->price) break;
+
         auto sellLevelIt = sellLevels.find(bestSellPrice);
         if (sellLevelIt == sellLevels.end() || sellLevelIt->second.empty()) {
             sellLevels.erase(bestSellPrice);
             sellPrices.pop();
             continue;
         }
-
-        if (bestSellPrice > it->price) break;
 
         auto& level = sellLevelIt->second;
         auto sellIt = level.front();
@@ -41,14 +42,14 @@ void OrderBook::matchBuy(std::list<Order>::iterator it) {
         if (sellIt->quantity == 0) {
             level.pop_front();
         }
-
         if (level.empty()) {
             sellLevels.erase(bestSellPrice);
             sellPrices.pop();
         }
     }
 
-    if (it->quantity > 0) {
+    // For market buy (price=0), do NOT put into book
+    if (it->quantity > 0 && it->price > 0) {
         buyLevels[it->price].push_back(it);
         buyPrices.push(it->price);
     }
@@ -59,14 +60,15 @@ void OrderBook::matchSell(std::list<Order>::iterator it) {
     while (it->quantity > 0 && !buyPrices.empty()) {
         double bestBuyPrice = buyPrices.top();
 
+        // Market sell: price == 0 means accept any buy price
+        if (it->price != 0 && bestBuyPrice < it->price) break;
+
         auto buyLevelIt = buyLevels.find(bestBuyPrice);
         if (buyLevelIt == buyLevels.end() || buyLevelIt->second.empty()) {
             buyLevels.erase(bestBuyPrice);
             buyPrices.pop();
             continue;
         }
-
-        if (bestBuyPrice < it->price) break;
 
         auto& level = buyLevelIt->second;
         auto buyIt = level.front();
@@ -80,14 +82,14 @@ void OrderBook::matchSell(std::list<Order>::iterator it) {
         if (buyIt->quantity == 0) {
             level.pop_front();
         }
-
         if (level.empty()) {
             buyLevels.erase(bestBuyPrice);
             buyPrices.pop();
         }
     }
 
-    if (it->quantity > 0) {
+    // For market sell (price=0), do NOT put into book
+    if (it->quantity > 0 && it->price > 0) {
         sellLevels[it->price].push_back(it);
         sellPrices.push(it->price);
     }

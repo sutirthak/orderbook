@@ -10,4 +10,7 @@ int main() {
     ob.addOrder({6, false, 101.0, 10});
     ob.addOrder({7, true, 99.0, 4});
     ob.addOrder({8, false, 98.0, 6});
+    ob.addOrder({8, false, 98.0, 6});
+    ob.addOrder({9, true, 0.0, 8}); // Market buy
+    return 0;
 }
